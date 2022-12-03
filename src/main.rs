@@ -3,13 +3,13 @@ pub mod file;
 pub mod day1;
 pub mod day2;
 
-fn string_wrap<F: std::fmt::Debug>(
-    f: impl Fn(Vec<String>) -> F + 'static,
-) -> Box<dyn Fn(Vec<String>) -> String> {
+type ProblemFn = Box<dyn Fn(Vec<String>) -> String>;
+
+fn string_wrap<F: std::fmt::Debug>(f: impl Fn(Vec<String>) -> F + 'static) -> ProblemFn {
     Box::new(move |v| format!("{:?}", f(v)))
 }
 
-fn problems() -> Vec<Vec<Box<dyn Fn(Vec<String>) -> String>>> {
+fn problems() -> Vec<Vec<ProblemFn>> {
     vec![
         vec![string_wrap(day1::part1), string_wrap(day1::part2)],
         vec![string_wrap(day2::part1), string_wrap(day2::part2)],
@@ -40,9 +40,8 @@ fn main() {
         .get(part - 1)
         .expect("Invalid part");
 
-    if let Ok(lines) = file::read_lines(&file) {
-        println!("{}", func(lines))
-    } else {
-        println!("Error reading file {}", &file);
+    match file::read_lines(&file) {
+        Ok(lines) => println!("{}", func(lines)),
+        Err(e) => println!("Error reading file ({}) {}", file, e),
     }
 }
