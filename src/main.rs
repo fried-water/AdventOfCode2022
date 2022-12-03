@@ -1,58 +1,47 @@
-use std::env;
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
+pub mod file;
 
+pub mod day1;
+pub mod day2;
 
-
-use itertools::Itertools;
-
-fn read_lines<P>(filename: P) -> io::Result<Vec<String>>
-where P: AsRef<Path>
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines().into_iter()
-        .filter_map(|x| x.ok())
-        .collect())
+fn string_wrap<F: std::fmt::Debug>(
+    f: impl Fn(Vec<String>) -> F + 'static,
+) -> Box<dyn Fn(Vec<String>) -> String> {
+    Box::new(move |v| format!("{:?}", f(v)))
 }
 
-fn group(v: Vec<String>) -> Vec<i32> {
-    v.into_iter()
-        .group_by(|el| !el.is_empty())
-        .into_iter()
-        .filter(|(key, _)| *key)
-        .map(|(_, group)| group.map(|e| e.parse::<i32>().unwrap()).sum())
-        .collect()
-}
-
-fn part1(v: Vec<String>) -> i32 {
-    group(v).into_iter().max().unwrap()
-}
-
-fn part2(v: Vec<String>) -> i32 {
-    group(v).into_iter()
-        .sorted_by(|a, b| Ord::cmp(&b, &a))
-        .into_iter()
-        .take(3)
-        .sum()
+fn problems() -> Vec<Vec<Box<dyn Fn(Vec<String>) -> String>>> {
+    vec![
+        vec![string_wrap(day1::part1), string_wrap(day1::part2)],
+        vec![string_wrap(day2::part1), string_wrap(day2::part2)],
+    ]
 }
 
 fn main() {
-    let mut args = env::args();
+    let mut args = std::env::args();
 
     args.next();
 
-    let part = args.next().expect("Expect part argument").parse::<i32>().expect("Expect part argument");
+    let day: usize = args
+        .next()
+        .expect("Expect day argument")
+        .parse()
+        .expect("Expect day argument");
+    let part: usize = args
+        .next()
+        .expect("Expect part argument")
+        .parse()
+        .expect("Expect part argument");
     let file = args.next().expect("Expect file argument");
 
-    if let Ok(lines) = read_lines(&file) {
-        if part == 1 {
-            println!("{:?}", part1(lines));
-        } else if part == 2 {
-            println!("{:?}", part2(lines));
-        } else {
-            println!("Expected part 1 or 2");
-        }
+    let p = problems();
+    let func = p
+        .get(day - 1)
+        .expect("Invalid day")
+        .get(part - 1)
+        .expect("Invalid part");
+
+    if let Ok(lines) = file::read_lines(&file) {
+        println!("{}", func(lines))
     } else {
         println!("Error reading file {}", &file);
     }
