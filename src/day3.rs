@@ -1,5 +1,3 @@
-use itertools::Itertools;
-
 type Sack = [i32; 52];
 
 fn idx(c: char) -> usize {
@@ -21,12 +19,11 @@ fn threshold(x: Sack, t: i32) -> i32 {
     x.into_iter().enumerate().find(|(_, x)| *x == t).unwrap().0 as i32
 }
 
-fn add(x: Sack, y: Sack) -> Sack {
-    let mut r = [0; 52];
-    for (i, (x, y)) in std::iter::zip(x, y).enumerate() {
-        r[i] = x + y
+fn add(mut x: Sack, y: Sack) -> Sack {
+    for (x, y) in x.iter_mut().zip(y) {
+        *x += y
     }
-    r
+    x
 }
 
 pub fn part1(v: Vec<String>) -> i32 {
@@ -38,11 +35,9 @@ pub fn part1(v: Vec<String>) -> i32 {
 }
 
 pub fn part2(v: Vec<String>) -> i32 {
-    v.into_iter()
-        .enumerate()
-        .group_by(|(i, _)| i / 3)
+    v.chunks(3)
         .into_iter()
-        .map(|(_, sacks)| sacks.map(|(_, el)| create_sack(&el)).fold([0; 52], add))
+        .map(|sacks| sacks.iter().map(|s| create_sack(s)).fold([0; 52], add))
         .map(|s| threshold(s, 3) + 1)
         .sum()
 }
