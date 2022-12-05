@@ -46,8 +46,12 @@ fn main() {
         .get(part - 1)
         .expect("Invalid part");
 
+    let timer = std::time::Instant::now();
+
     match file::read_lines(&file) {
         Ok(lines) => println!("{}", func(lines)),
         Err(e) => println!("Error reading file ({}) {}", file, e),
     }
+
+    println!("{:.2?}", timer.elapsed());
 }
