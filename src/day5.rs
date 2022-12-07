@@ -2,7 +2,7 @@ use itertools::Itertools;
 
 pub fn parse(v: Vec<String>) -> (Vec<Vec<char>>, Vec<(usize, usize, usize)>) {
     let height = v.iter().take_while(|l| l.contains('[')).count();
-    let count = v.get(height).unwrap().split_whitespace().count();
+    let count = v[height].split_whitespace().count();
 
     let buckets = v[..height]
         .iter()

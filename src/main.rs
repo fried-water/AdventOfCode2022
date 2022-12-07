@@ -45,11 +45,7 @@ fn main() {
     let file = args.next().expect("Expect file argument");
 
     let p = problems();
-    let func = p
-        .get(day - 1)
-        .expect("Invalid day")
-        .get(part - 1)
-        .expect("Invalid part");
+    let func = &p[day - 1][part - 1];
 
     let timer = std::time::Instant::now();
 

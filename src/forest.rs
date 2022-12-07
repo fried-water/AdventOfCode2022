@@ -45,23 +45,11 @@ impl<T> Forest<T> {
         }
     }
 
-    fn node(&mut self, id: usize) -> &mut ForestNode<T> {
-        self.nodes.get_mut(id).unwrap()
-    }
-
     fn drill_down(&self, mut id: usize) -> usize {
         while self.first_child(id).is_some() {
             id = self.first_child(id).unwrap();
         }
         id
-    }
-
-    pub fn get(&self, id: usize) -> &T {
-        &self.nodes.get(id).unwrap().value
-    }
-
-    pub fn get_mut(&mut self, id: usize) -> &mut T {
-        &mut self.nodes.get_mut(id).unwrap().value
     }
 
     pub fn len(&self) -> usize {
@@ -73,7 +61,7 @@ impl<T> Forest<T> {
     }
 
     pub fn parent(&self, id: usize) -> Option<usize> {
-        self.nodes.get(id).unwrap().parent
+        self.nodes[id].parent
     }
 
     pub fn is_leaf(&self, id: usize) -> bool {
@@ -81,11 +69,11 @@ impl<T> Forest<T> {
     }
 
     pub fn next_sibling(&self, id: usize) -> Option<usize> {
-        self.nodes.get(id).unwrap().next_sibling
+        self.nodes[id].next_sibling
     }
 
     pub fn first_child(&self, id: usize) -> Option<usize> {
-        self.nodes.get(id).unwrap().first_child
+        self.nodes[id].first_child
     }
 
     pub fn roots(&self) -> SiblingIter<T> {
@@ -142,7 +130,7 @@ impl<T> Forest<T> {
         let first_child = self.first_child(parent_id);
         self.nodes
             .push(ForestNode::new(v, Some(parent_id), first_child));
-        self.node(parent_id).first_child = Some(id);
+        self.nodes[parent_id].first_child = Some(id);
         id
     }
 
@@ -155,12 +143,26 @@ impl<T> Forest<T> {
             while self.next_sibling(cid).is_some() {
                 cid = self.next_sibling(cid).unwrap()
             }
-            self.node(cid).next_sibling = Some(id);
+            self.nodes[cid].next_sibling = Some(id);
         } else {
-            self.node(parent_id).first_child = Some(id);
+            self.nodes[parent_id].first_child = Some(id);
         };
 
         id
+    }
+}
+
+impl<T> std::ops::Index<usize> for Forest<T> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &T {
+        &self.nodes.index(index).value
+    }
+}
+
+impl<T> std::ops::IndexMut<usize> for Forest<T> {
+    fn index_mut(&mut self, index: usize) -> &mut T {
+        &mut self.nodes.index_mut(index).value
     }
 }
 
@@ -185,7 +187,7 @@ impl<'a, T> Iterator for SiblingIter<'a, T> {
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(id) = self.cursor {
             self.cursor = self.forest.next_sibling(id);
-            Some((self.forest, id, self.forest.get(id)))
+            Some((self.forest, id, &self.forest[id]))
         } else {
             None
         }
@@ -198,7 +200,7 @@ impl<'a, T> Iterator for AncestorIter<'a, T> {
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(id) = self.cursor {
             self.cursor = self.forest.parent(id);
-            Some((self.forest, id, self.forest.get(id)))
+            Some((self.forest, id, &self.forest[id]))
         } else {
             None
         }
@@ -217,7 +219,7 @@ impl<'a, T> Iterator for PostOrderIter<'a, T> {
             } else {
                 self.cursor = None
             }
-            Some((self.forest, id, self.forest.get(id)))
+            Some((self.forest, id, &self.forest[id]))
         } else {
             None
         }
