@@ -8,6 +8,7 @@ pub mod day4;
 pub mod day5;
 pub mod day6;
 pub mod day7;
+pub mod day8;
 
 type ProblemFn = Box<dyn Fn(Vec<String>) -> String>;
 
@@ -24,6 +25,7 @@ fn problems() -> Vec<Vec<ProblemFn>> {
         vec![string_wrap(day5::part1), string_wrap(day5::part2)],
         vec![string_wrap(day6::part1), string_wrap(day6::part2)],
         vec![string_wrap(day7::part1), string_wrap(day7::part2)],
+        vec![string_wrap(day8::part1), string_wrap(day8::part2)],
     ]
 }
 
