@@ -1,43 +1,39 @@
-use itertools::Itertools;
+use glam::IVec2;
 use std::collections::HashSet;
 
-fn mv((x, y): (i32, i32), d: char) -> (i32, i32) {
-    match d {
-        'U' => (x, y + 1),
-        'D' => (x, y - 1),
-        'L' => (x - 1, y),
-        'R' => (x + 1, y),
-        _ => panic!("uhoh"),
-    }
-}
-
-fn follow((x1, y1): (i32, i32), (x2, y2): (i32, i32)) -> (i32, i32) {
-    let dx = x1 - x2;
-    let dy = y1 - y2;
-
-    if num::abs(dx) < 2 && num::abs(dy) < 2 {
-        (x2, y2)
+fn follow(h: IVec2, t: IVec2) -> IVec2 {
+    if (h - t).abs().max_element() > 1 {
+        (h - t).signum()
     } else {
-        (x2 + num::signum(dx), y2 + num::signum(dy))
+        IVec2::ZERO
     }
 }
 
 fn run(v: Vec<String>, length: usize) -> usize {
     v.into_iter()
         .map(|line| {
-            line.split(' ')
-                .map(|x| x.to_string())
-                .collect_tuple::<(_, _)>()
-                .unwrap()
+            (
+                match line.chars().next().unwrap() {
+                    'U' => IVec2::Y,
+                    'D' => -IVec2::Y,
+                    'L' => -IVec2::X,
+                    'R' => IVec2::X,
+                    _ => panic!("uhoh"),
+                },
+                line.chars()
+                    .skip(2)
+                    .collect::<String>()
+                    .parse::<i32>()
+                    .unwrap(),
+            )
         })
-        .map(|(f, l)| (f.chars().next().unwrap(), l.parse::<i32>().unwrap()))
         .fold(
-            (HashSet::<(i32, i32)>::new(), vec![(0, 0); length]),
+            (HashSet::<IVec2>::new(), vec![IVec2::ZERO; length]),
             |(history, s), (d, c)| {
                 (0..c).fold((history, s), |(mut history, mut s), _| {
-                    s[0] = mv(s[0], d);
+                    s[0] = s[0] + d;
                     for i in 1..s.len() {
-                        s[i] = follow(s[i - 1], s[i]);
+                        s[i] = s[i] + follow(s[i - 1], s[i]);
                     }
                     history.insert(*s.last().unwrap());
                     (history, s)
