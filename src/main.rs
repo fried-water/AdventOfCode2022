@@ -3,6 +3,7 @@ pub mod forest;
 
 pub mod day1;
 pub mod day10;
+pub mod day11;
 pub mod day2;
 pub mod day3;
 pub mod day4;
@@ -30,6 +31,7 @@ fn problems() -> Vec<Vec<ProblemFn>> {
         vec![string_wrap(day8::part1), string_wrap(day8::part2)],
         vec![string_wrap(day9::part1), string_wrap(day9::part2)],
         vec![string_wrap(day10::part1), string_wrap(day10::part2)],
+        vec![string_wrap(day11::part1), string_wrap(day11::part2)],
     ]
 }
 
