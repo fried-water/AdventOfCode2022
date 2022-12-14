@@ -24,7 +24,7 @@ fn run(v: Vec<String>, length: usize) -> usize {
         .fold(
             (HashSet::<IVec2>::new(), vec![IVec2::ZERO; length]),
             |(mut history, mut s), d| {
-                s[0] = s[0] + d;
+                s[0] += d;
                 for i in 1..s.len() {
                     s[i] = s[i] + follow(s[i - 1], s[i]);
                 }

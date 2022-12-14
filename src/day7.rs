@@ -67,7 +67,7 @@ fn execute(mut f: Forest<Node>, mut cursor: usize, cmds: Vec<Cmd>) -> Forest<Nod
 
 pub fn part1(v: Vec<String>) -> usize {
     let mut f = Forest::<Node>::new();
-    let root = f.insert_root(Node::Dir(String::new()));
+    let root = f.append_root(Node::Dir(String::new()));
     let f = execute(f, root, parse(v));
 
     f.post_order_root()
@@ -86,7 +86,7 @@ pub fn part1(v: Vec<String>) -> usize {
 
 pub fn part2(v: Vec<String>) -> usize {
     let mut f = Forest::<Node>::new();
-    let root = f.insert_root(Node::Dir(String::new()));
+    let root = f.append_root(Node::Dir(String::new()));
     let f = execute(f, root, parse(v));
 
     let total_space = 70000000;

@@ -30,7 +30,7 @@ fn parse(v: Vec<String>) -> (Vec<Vec<i32>>, IVec2, IVec2) {
     )
 }
 
-fn height(b: &Vec<Vec<i32>>, p: IVec2) -> i32 {
+fn height(b: &[Vec<i32>], p: IVec2) -> i32 {
     *b.get(p.y as usize)
         .and_then(|row| row.get(p.x as usize))
         .unwrap_or(&30)
@@ -54,7 +54,7 @@ impl PartialOrd for HeapElement {
     }
 }
 
-fn route(b: &Vec<Vec<i32>>, s: Vec<IVec2>, end: IVec2) -> Option<i32> {
+fn route(b: &[Vec<i32>], s: Vec<IVec2>, end: IVec2) -> Option<i32> {
     let mut heap = s
         .into_iter()
         .map(|s| HeapElement { distance: 0, p: s })

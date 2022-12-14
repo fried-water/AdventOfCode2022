@@ -118,13 +118,6 @@ impl<T> Forest<T> {
         }
     }
 
-    pub fn insert_root(&mut self, v: T) -> usize {
-        let id = self.nodes.len();
-        self.nodes.push(ForestNode::new(v, None, self.root));
-        self.root = Some(id);
-        id
-    }
-
     pub fn prepend_child(&mut self, parent_id: usize, v: T) -> usize {
         let id = self.nodes.len();
         let first_child = self.first_child(parent_id);
@@ -134,21 +127,35 @@ impl<T> Forest<T> {
         id
     }
 
-    pub fn append_child(&mut self, parent_id: usize, v: T) -> usize {
+    pub fn append(&mut self, parent_id: Option<usize>, v: T) -> usize {
         let id = self.nodes.len();
-        let first_child = self.first_child(parent_id);
-        self.nodes.push(ForestNode::new(v, Some(parent_id), None));
+        self.nodes.push(ForestNode::new(v, parent_id, None));
+
+        let first_child = match parent_id {
+            Some(p) => self.first_child(p),
+            None => self.root,
+        };
 
         if let Some(mut cid) = first_child {
             while self.next_sibling(cid).is_some() {
                 cid = self.next_sibling(cid).unwrap()
             }
             self.nodes[cid].next_sibling = Some(id);
+        } else if let Some(pid) = parent_id {
+            self.nodes[pid].first_child = Some(id);
         } else {
-            self.nodes[parent_id].first_child = Some(id);
-        };
+            self.root = Some(id)
+        }
 
         id
+    }
+
+    pub fn append_root(&mut self, v: T) -> usize {
+        self.append(None, v)
+    }
+
+    pub fn append_child(&mut self, parent_id: usize, v: T) -> usize {
+        self.append(Some(parent_id), v)
     }
 }
 
