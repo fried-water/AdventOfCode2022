@@ -9,6 +9,7 @@ pub mod day11;
 pub mod day12;
 pub mod day13;
 pub mod day14;
+pub mod day15;
 pub mod day2;
 pub mod day3;
 pub mod day4;
@@ -40,6 +41,7 @@ fn problems() -> Vec<Vec<ProblemFn>> {
         vec![string_wrap(day12::part1), string_wrap(day12::part2)],
         vec![string_wrap(day13::part1), string_wrap(day13::part2)],
         vec![string_wrap(day14::part1), string_wrap(day14::part2)],
+        vec![string_wrap(day15::part1), string_wrap(day15::part2)],
     ]
 }
 
